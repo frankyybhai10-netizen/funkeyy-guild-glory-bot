@@ -1,0 +1,20 @@
+{
+  "3101169734": {
+    "clanId": "3101169734",
+    "clanName": "FUNKEYY",
+    "level": 5,
+    "members": 40,
+    "capacity": 50,
+    "glory": 12000,
+    "region": "BD"
+  },
+  "1234567890": {
+    "clanId": "1234567890",
+    "clanName": "SAMPLE GUILD",
+    "level": 3,
+    "members": 20,
+    "capacity": 30,
+    "glory": 5000,
+    "region": "IND"
+  }
+}
