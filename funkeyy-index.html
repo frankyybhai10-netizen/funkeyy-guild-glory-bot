@@ -30,7 +30,60 @@ body{background:radial-gradient(circle at 50% -10%,#251546 0,#0d0a18 38%,#090713
 <section class="features"><div class="feature"><div class="icon">⚡</div><b>Fast Guild lookup</b><span>Enter a Guild UID and show guild details in a mobile-first interface.</span></div><div class="feature"><div class="icon">🛡️</div><b>Guild details</b><span>Designed to show guild name, UID, level, members, region and status.</span></div><div class="feature"><div class="icon">💳</div><b>Offer + payment</b><span>333 रु payment with Khalti/Bank QR and WhatsApp support: 9740304031.</span></div></section>
 </main><footer class="footer">© 2026 FUNKEYY GUILD GLORY BOT • Demo preview • Not affiliated with Garena</footer><div class="toast" id="toast"></div>
 <script>
-async function lookup(){var v=document.getElementById('uid').value.trim(),server=document.getElementById('server').value;if(!/^\d{5,15}$/.test(v)){alert('Enter a valid Guild UID');return}document.getElementById('player').textContent='Checking…';document.getElementById('uidout').textContent=v;document.getElementById('status').textContent='CHECKING';document.getElementById('status').style.color='var(--gold)';var local='/api/guild?region='+encodeURIComponent(server)+'&guildID='+encodeURIComponent(v);var upstream='https://free-ff-api-src-5plp.onrender.com/api/v1/guildInfo?region='+encodeURIComponent(server)+'&guildID='+encodeURIComponent(v);var urls=[local,upstream,'https://api.allorigins.win/raw?url='+encodeURIComponent(upstream)];try{var d=null,last='';for(var i=0;i<urls.length;i++){try{var r=await fetch(urls[i],{cache:'no-store'});if(!r.ok){last='HTTP '+r.status;continue}var x=await r.json();if(x&&x.clanId){d=x;break}last=(x&&x.message)||'Invalid API response'}catch(e){last=e.message||'Network error'}}if(!d)throw new Error(last||'All API routes failed');document.getElementById('apiBadge').textContent=urls.indexOf(local)===0?'API ● SERVER':'API ● FALLBACK';document.getElementById('player').textContent=d.clanName||'Unknown Guild';document.getElementById('level').textContent=d.clanLevel==null?'—':d.clanLevel;document.getElementById('members').textContent=(d.memberNum==null?'—':d.memberNum)+' / '+(d.capacity==null?'—':d.capacity);document.getElementById('region').textContent=d.region||server;document.getElementById('status').textContent='ACTIVE';document.getElementById('status').style.color='var(--green)'}catch(e){document.getElementById('apiBadge').textContent='API ● OFFLINE';document.getElementById('player').textContent='Guild API unavailable';document.getElementById('level').textContent='—';document.getElementById('members').textContent='—';document.getElementById('region').textContent=server;document.getElementById('status').textContent='TRY AGAIN';document.getElementById('status').style.color='#ff6b6b';alert('Server API connect भएन। Website backend deploy भएको छ कि छैन जाँच गर्नुहोस्।')}}
+async function lookup(){
+  var uid = document.getElementById('uid').value.trim();
+  var region = document.getElementById('server').value;
+  var player = document.getElementById('player');
+  var uidout = document.getElementById('uidout');
+  var level = document.getElementById('level');
+  var members = document.getElementById('members');
+  var regionEl = document.getElementById('region');
+  var status = document.getElementById('status');
+
+  function setStatus(text, color){
+    status.textContent = text;
+    status.style.color = color;
+  }
+
+  if(!/^\d{5,15}$/.test(uid)){
+    player.textContent = 'Valid Guild UID halnus';
+    setStatus('INVALID', '#f7b84b');
+    return;
+  }
+
+  player.textContent = 'Checking...';
+  uidout.textContent = uid;
+  setStatus('CHECKING', '#f7b84b');
+
+  try {
+    var res = await fetch('/api/guild?region=' + encodeURIComponent(region) + '&guildID=' + encodeURIComponent(uid));
+    var data = await res.json();
+
+    if(!res.ok){
+      player.textContent = res.status === 404 ? 'Guild fela parena' : 'Error aayo';
+      level.textContent = '—';
+      members.textContent = '—';
+      regionEl.textContent = region;
+      setStatus(res.status === 404 ? 'NOT FOUND' : 'ERROR', '#ff6b6b');
+      return;
+    }
+
+    player.textContent = data.clanName + (data.glory ? ' • Glory ' + data.glory : '');
+    level.textContent = data.level;
+    members.textContent = data.members + (data.capacity ? '/' + data.capacity : '');
+    regionEl.textContent = data.region || region;
+    setStatus('FOUND', '#28e27d');
+  } catch (e) {
+    player.textContent = 'Server connect bhayena';
+    setStatus('ERROR', '#ff6b6b');
+  }
+  }
+  (function(){
+  var boxes = document.querySelectorAll('.qr');
+  if (boxes.length > 1) {
+    boxes[1].innerHTML = '<img src="bank-qr.jpg" alt="Bank QR" style="width:100%;height:100%;object-fit:contain;border-radius:8px">';
+  }
+})();
 function sendPayment(){var order=document.getElementById('orderId').value.trim(),note=document.getElementById('paymentNote').value.trim();if(!order){alert('Order ID / Transaction ID राख्नुहोस्');return}var text='FUNKEYY GUILD GLORY BOT%0AOrder ID: '+encodeURIComponent(order)+'%0APayment: '+encodeURIComponent(note||'Not specified')+'%0AAmount: 333 रु';window.location.href='https://wa.me/9779740304031?text='+text}
 </script>
 </div>
