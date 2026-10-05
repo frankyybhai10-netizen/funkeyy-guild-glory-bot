@@ -70,7 +70,7 @@ app.get("/api/guild", async (req, res) => {
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile(__dirname + "/funkeyy-index.html");
 });
 
 app.listen(PORT, "0.0.0.0", () => {
